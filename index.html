@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CONCRETE CLASH • Tic-Tac-Toe</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+        :root {
+            --yellow: #FFEB3B;
+            --dark: #1C2526;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background: var(--yellow);
+            background-image: 
+                linear-gradient(rgba(28,37,38,0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(28,37,38,0.08) 1px, transparent 1px);
+            background-size: 50px 50px;
+            font-family: 'Press Start 2P', system-ui;
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header {
+            position: absolute;
+            top: 25px;
+            font-size: 2.2rem;
+            font-weight: bold;
+            letter-spacing: 6px;
+            text-shadow: 5px 5px 0 #1C2526;
+        }
+
+        .container {
+            background: #1C2526;
+            border: 14px solid #1C2526;
+            border-radius: 24px;
+            box-shadow: 0 0 0 16px var(--yellow), 30px 30px 0 -10px rgba(28,37,38,0.4);
+            padding: 30px 25px;
+            max-width: 560px;
+            width: 95%;
+        }
+
+        .title { color: var(--yellow); font-size: 2rem; text-align: center; margin-bottom: 10px; text-shadow: 4px 4px 0 #1C2526; }
+
+        .characters {
+            display: flex;
+            gap: 50px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .character-card {
+            background: #FFEB3B;
+            color: #1C2526;
+            width: 230px;
+            padding: 30px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 12px 0 #1C2526;
+        }
+
+        
+        .character-mark { font-size: 5.5rem; line-height: 1; }
+        .character-name { font-size: 1.5rem; margin: 15px 0 8px; }
+
+        .info-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #FFEB3B;
+            color: #1C2526;
+            padding: 15px 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            background: #1C2526;
+            padding: 12px;
+            border-radius: 18px;
+        }
+
+        .cell {
+            background: #FFEB3B;
+            height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5.5rem;
+            font-weight: bold;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: inset 0 10px 0 rgba(28,37,38,0.2);
+        }
+
+        .cell:hover { background: #fff176; transform: scale(1.05); }
+        
+
+        @keyframes popIn { 0% { transform: scale(0.3); } 100% { transform: scale(1); } }
+
+        .status {
+            margin: 20px 0;
+            font-size: 1.35rem;
+            min-height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #1C2526;
+            color: #FFEB3B;
+            border-radius: 15px;
+            padding: 18px;
+        }
+
+        button {
+            font-family: 'Press Start 2P', system-ui;
+            background: #FFEB3B;
+            color: #1C2526;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 8px 0 #1C2526;
+            margin: 0 8px;
+        }
+
+        button:hover { transform: translateY(-4px); }
+    </style>
+</head>
+<body>
+    <div class="header">CONCRETE CLASH</div>
+
+    <div class="container">
+        <!-- Selection -->
+        <div id="selectionScreen">
+            <div class="title">TIC-TAC-TOE</div>
+            <h2 style="color:#FFEB3B; text-align:center; margin:20px 0;">CHOOSE YOUR FIGHTER</h2>
+            
+            <div class="characters">
+                <div class="character-card" onclick="selectCharacter('X')">
+                    <div class="character-mark">X</div>
+                    <div class="character-name">BEAN</div>
+                </div>
+                <div class="character-card" onclick="selectCharacter('O')">
+                    <div class="character-mark">O</div>
+                    <div class="character-name">KONKURRI</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game -->
+        <div id="gameScreen" style="display:none;">
+            <div class="info-bar">
+                <div><strong>BEAN</strong> <span id="scoreBean">0</span></div>
+                <div style="font-size:2.2rem;">VS</div>
+                <div style="text-align:right;"><strong>KONKURRI</strong> <span id="scoreKonkurri">0</span></div>
+            </div>
+
+            <div class="board" id="board"></div>
+
+            <div class="status" id="status">YOUR MOVE</div>
+
+            <div style="text-align:center; margin-top:20px;">
+                <button onclick="resetGame()">NEW ROUND</button>
+                <button onclick="backToSelection()">CHANGE FIGHTER</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <script>
+        let board = Array(9).fill(null);
+        let humanMark = 'X', botMark = 'O';
+        let humanName = 'Bean', botName = 'Konkurri';
+        let currentPlayer = 'X';
+        let gameActive = true;
+        let scores = { Bean: 0, Konkurri: 0 };
+
+        const winningCombos = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+
+        function checkWinner(b, player) {
+            return winningCombos.some(combo => combo.every(i => b[i] === player));
+        }
+
+        function isDraw(b) {
+            return b.every(cell => cell !== null);
+        }
+
+        function getBestMove() {
+            let bestScore = -Infinity;
+            let bestMove = -1;
+
+            for (let i = 0; i < 9; i++) {
+                if (board[i] === null) {
+                    board[i] = botMark;
+                    let score = minimax(board, false);
+                    board[i] = null;
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestMove = i;
+                    }
+                }
+            }
+            return bestMove;
+        }
+
+        function minimax(newBoard, isMaximizing) {
+            if (checkWinner(newBoard, botMark)) return 10;
+            if (checkWinner(newBoard, humanMark)) return -10;
+            if (isDraw(newBoard)) return 0;
+
+            let bestScore = isMaximizing ? -Infinity : Infinity;
+            let player = isMaximizing ? botMark : humanMark;
+
+            for (let i = 0; i < 9; i++) {
+                if (newBoard[i] === null) {
+                    newBoard[i] = player;
+                    let score = minimax(newBoard, !isMaximizing);
+                    newBoard[i] = null;
+                    bestScore = isMaximizing ? Math.max(score, bestScore) : Math.min(score, bestScore);
+                }
+            }
+            return bestScore;
+        }
+
+        function renderBoard() {
+            const boardEl = document.getElementById('board');
+            boardEl.innerHTML = '';
+
+            for (let i = 0; i < 9; i++) {
+                const cell = document.createElement('div');
+                cell.classList.add('cell');
+                cell.dataset.index = i;
+
+                if (board[i]) {
+                    cell.textContent = board[i];
+                    cell.classList.add(board[i].toLowerCase());
+                } else if (gameActive && currentPlayer === humanMark) {
+                    cell.addEventListener('click', () => makeMove(i));
+                }
+
+                boardEl.appendChild(cell);
+            }
+        }
+
+        function makeMove(index) {
+            if (!gameActive || board[index] !== null || currentPlayer !== humanMark) return;
+
+            board[index] = humanMark;
+            renderBoard();
+
+            if (checkWinner(board, humanMark)) {
+                endGame(humanName);
+                return;
+            }
+            if (isDraw(board)) {
+                endGame("DRAW");
+                return;
+            }
+
+            currentPlayer = botMark;
+            document.getElementById('status').textContent = `${botName} THINKING...`;
+            
+            setTimeout(botTurn, 300);
+        }
+
+        function botTurn() {
+            const move = getBestMove();
+            if (move === -1) return;
+
+            board[move] = botMark;
+            renderBoard();
+
+            if (checkWinner(board, botMark)) {
+                endGame(botName);
+                return;
+            }
+            if (isDraw(board)) {
+                endGame("DRAW");
+                return;
+            }
+
+            // ✅ Fixed: Update player first, then render again
+            currentPlayer = humanMark;
+            document.getElementById('status').textContent = `YOUR TURN • ${humanName}`;
+            renderBoard();   // Re-render to add click listeners
+        }
+
+        function endGame(winner) {
+            gameActive = false;
+            const status = document.getElementById('status');
+
+            if (winner === "DRAW") {
+                status.textContent = "IT'S A DRAW!";
+            } else {
+                status.textContent = `${winner} WINS!`;
+                if (winner === humanName) scores.Bean++;
+                else scores.Konkurri++;
+                
+                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+            }
+
+            document.getElementById('scoreBean').textContent = scores.Bean;
+            document.getElementById('scoreKonkurri').textContent = scores.Konkurri;
+        }
+
+        function startGame() {
+            board = Array(9).fill(null);
+            currentPlayer = 'X';
+            gameActive = true;
+
+            document.getElementById('selectionScreen').style.display = 'none';
+            document.getElementById('gameScreen').style.display = 'block';
+
+            renderBoard();
+            document.getElementById('status').textContent = `YOUR TURN • ${humanName}`;
+
+            if (humanMark === 'O') setTimeout(botTurn, 400);
+        }
+
+        window.selectCharacter = function(mark) {
+            humanMark = mark;
+            botMark = mark === 'X' ? 'O' : 'X';
+            humanName = mark === 'X' ? 'Bean' : 'Konkurri';
+            botName = mark === 'X' ? 'Konkurri' : 'Bean';
+            startGame();
+        };
+
+        window.resetGame = function() {
+            board = Array(9).fill(null);
+            currentPlayer = 'X';
+            gameActive = true;
+            renderBoard();
+            document.getElementById('status').textContent = `YOUR TURN • ${humanName}`;
+            if (humanMark === 'O') setTimeout(botTurn, 300);
+        };
+
+        window.backToSelection = function() {
+            document.getElementById('gameScreen').style.display = 'none';
+            document.getElementById('selectionScreen').style.display = 'block';
+        };
+    </script>
+</body>
+</html>
