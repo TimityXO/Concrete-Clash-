@@ -392,7 +392,7 @@
                 const cell = document.createElement('div');
                 cell.classList.add('cell');
                 if (board[i]) {
-                    cell.textContent = board[i] === 'X' ? '✕' : '○';
+                    cell.textContent = board[i] === 'X' ? '✕' : 'O';
                     cell.classList.add('taken');
                     if (winCombo && winCombo.includes(i)) cell.classList.add('winning');
                 } else if (gameActive && currentPlayer === humanMark) {
