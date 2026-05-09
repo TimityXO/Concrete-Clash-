@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>CONCRETE CLASH • Tic-Tac-Toe</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
@@ -10,174 +10,288 @@
         :root {
             --yellow: #FFEB3B;
             --dark: #1C2526;
+            --green: #69f0ae;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        html, body { height: 100%; overflow-x: hidden; }
+
         body {
             background: var(--yellow);
-            background-image: 
+            background-image:
                 linear-gradient(rgba(28,37,38,0.08) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(28,37,38,0.08) 1px, transparent 1px);
-            background-size: 50px 50px;
+            background-size: 40px 40px;
             font-family: 'Press Start 2P', system-ui;
             color: var(--dark);
-            min-height: 100vh;
+            min-height: 100dvh;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
+            padding-bottom: env(safe-area-inset-bottom, 16px);
         }
 
+        /* ── HEADER ── */
         .header {
-            position: absolute;
-            top: 25px;
-            font-size: 2.2rem;
-            font-weight: bold;
-            letter-spacing: 6px;
-            text-shadow: 5px 5px 0 #1C2526;
+            width: 100%;
+            text-align: center;
+            padding: 14px 12px 8px;
+            font-size: clamp(0.7rem, 3.8vw, 1.4rem);
+            letter-spacing: clamp(2px, 1.5vw, 6px);
+            text-shadow: 3px 3px 0 var(--dark);
+            flex-shrink: 0;
         }
 
+        /* ── CONTAINER ── */
         .container {
-            background: #1C2526;
-            border: 14px solid #1C2526;
-            border-radius: 24px;
-            box-shadow: 0 0 0 16px var(--yellow), 30px 30px 0 -10px rgba(28,37,38,0.4);
-            padding: 30px 25px;
-            max-width: 560px;
-            width: 95%;
+            background: var(--dark);
+            border-radius: 20px;
+            box-shadow: 0 0 0 10px var(--yellow), 14px 14px 0 0 rgba(28,37,38,0.3);
+            padding: clamp(14px, 4vw, 26px) clamp(12px, 4vw, 22px);
+            width: min(96%, 520px);
+            margin: 6px auto 28px;
         }
 
-        .title { color: var(--yellow); font-size: 2rem; text-align: center; margin-bottom: 10px; text-shadow: 4px 4px 0 #1C2526; }
+        /* ── SELECTION ── */
+        .title {
+            color: var(--yellow);
+            font-size: clamp(1rem, 5.5vw, 2rem);
+            text-align: center;
+            margin-bottom: 6px;
+            text-shadow: 3px 3px 0 rgba(0,0,0,0.4);
+        }
+
+        .subtitle {
+            color: var(--yellow);
+            font-size: clamp(0.48rem, 2.3vw, 0.85rem);
+            text-align: center;
+            margin: 10px 0 14px;
+        }
+
+        .difficulty-bar {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 0 0 8px;
+        }
+
+        .diff-btn {
+            font-family: 'Press Start 2P', system-ui;
+            font-size: clamp(0.42rem, 1.9vw, 0.6rem);
+            padding: clamp(7px, 2vw, 10px) clamp(8px, 2.5vw, 14px);
+            border-radius: 8px;
+            border: 2px solid var(--dark);
+            cursor: pointer;
+            background: #fff9c4;
+            color: var(--dark);
+            box-shadow: 0 4px 0 var(--dark);
+            transition: all 0.15s;
+            touch-action: manipulation;
+        }
+
+        .diff-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--dark); }
+        .diff-btn.active { background: var(--dark); color: var(--yellow); }
+
+        .diff-label {
+            color: var(--yellow);
+            font-size: clamp(0.4rem, 1.7vw, 0.6rem);
+            text-align: center;
+            margin-bottom: 14px;
+            line-height: 1.8;
+            min-height: 16px;
+            padding: 0 4px;
+        }
 
         .characters {
             display: flex;
-            gap: 50px;
+            gap: clamp(10px, 3vw, 22px);
             justify-content: center;
-            flex-wrap: wrap;
-            margin: 30px 0;
         }
 
         .character-card {
-            background: #FFEB3B;
-            color: #1C2526;
-            width: 230px;
-            padding: 30px 20px;
-            border-radius: 20px;
+            background: var(--yellow);
+            color: var(--dark);
+            flex: 1;
+            max-width: 200px;
+            padding: clamp(14px, 4vw, 24px) clamp(10px, 3vw, 16px);
+            border-radius: 16px;
             cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 12px 0 #1C2526;
+            box-shadow: 0 8px 0 rgba(0,0,0,0.5);
+            text-align: center;
+            touch-action: manipulation;
+            transition: transform 0.15s, box-shadow 0.15s;
         }
 
-        
-        .character-mark { font-size: 5.5rem; line-height: 1; }
-        .character-name { font-size: 1.5rem; margin: 15px 0 8px; }
+        .character-card:active { transform: translateY(4px); box-shadow: 0 4px 0 rgba(0,0,0,0.5); }
 
+        .character-mark { font-size: clamp(2.6rem, 12vw, 4.5rem); line-height: 1.1; }
+        .character-name { font-size: clamp(0.65rem, 3vw, 1.2rem); margin: 10px 0 5px; }
+        .character-sub  { font-size: clamp(0.36rem, 1.4vw, 0.52rem); opacity: 0.7; }
+
+        /* ── GAME SCREEN ── */
         .info-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: #FFEB3B;
-            color: #1C2526;
-            padding: 15px 20px;
-            border-radius: 15px;
-            margin-bottom: 20px;
+            background: var(--yellow);
+            color: var(--dark);
+            padding: clamp(10px, 3vw, 15px) clamp(12px, 3.5vw, 20px);
+            border-radius: 14px;
+            margin-bottom: 12px;
+            font-size: clamp(0.48rem, 2vw, 0.78rem);
         }
 
+        .info-score { font-size: clamp(1.3rem, 6vw, 2rem); margin-top: 4px; }
+        .vs-text    { font-size: clamp(1rem, 5vw, 1.8rem); }
+        .diff-tag   { font-size: clamp(0.36rem, 1.4vw, 0.52rem); margin-top: 4px; opacity: 0.7; }
+
+        /* Board */
         .board {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            background: #1C2526;
-            padding: 12px;
-            border-radius: 18px;
+            gap: clamp(6px, 2.2vw, 12px);
+            background: var(--dark);
+            padding: clamp(6px, 2.2vw, 12px);
+            border-radius: 16px;
         }
 
         .cell {
-            background: #FFEB3B;
-            height: 140px;
+            aspect-ratio: 1 / 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 5.5rem;
-            font-weight: bold;
-            border-radius: 14px;
+            font-size: clamp(2.2rem, 10vw, 4.2rem);
+            border-radius: clamp(10px, 2.8vw, 14px);
             cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: inset 0 10px 0 rgba(28,37,38,0.2);
+            background: var(--yellow);
+            box-shadow: inset 0 6px 0 rgba(28,37,38,0.2);
+            user-select: none;
+            touch-action: manipulation;
+            transition: background 0.12s, transform 0.12s;
         }
 
-        .cell:hover { background: #fff176; transform: scale(1.05); }
-        
+        .cell:active:not(.taken) { transform: scale(0.91); background: #ffe000; }
+        .cell.winning { background: var(--green); animation: pulse 0.5s ease-in-out infinite alternate; }
+        .cell.taken   { cursor: default; }
 
-        @keyframes popIn { 0% { transform: scale(0.3); } 100% { transform: scale(1); } }
+        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.06); } }
+        @keyframes popIn { 0% { transform: scale(0.3); } 80% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        .cell.pop { animation: popIn 0.22s ease forwards; }
 
         .status {
-            margin: 20px 0;
-            font-size: 1.35rem;
-            min-height: 70px;
+            margin: 12px 0;
+            font-size: clamp(0.52rem, 2.3vw, 0.95rem);
+            min-height: 54px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #1C2526;
-            color: #FFEB3B;
-            border-radius: 15px;
-            padding: 18px;
+            background: var(--dark);
+            color: var(--yellow);
+            border-radius: 14px;
+            padding: 12px 16px;
+            text-align: center;
+            line-height: 1.9;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 12px;
+            flex-wrap: wrap;
         }
 
         button {
             font-family: 'Press Start 2P', system-ui;
-            background: #FFEB3B;
-            color: #1C2526;
+            background: var(--yellow);
+            color: var(--dark);
             border: none;
-            padding: 16px 32px;
+            padding: clamp(11px, 3vw, 15px) clamp(12px, 3.5vw, 22px);
             border-radius: 12px;
-            font-size: 1rem;
+            font-size: clamp(0.42rem, 1.8vw, 0.72rem);
             cursor: pointer;
-            box-shadow: 0 8px 0 #1C2526;
-            margin: 0 8px;
+            box-shadow: 0 6px 0 rgba(0,0,0,0.5);
+            touch-action: manipulation;
+            white-space: nowrap;
+            transition: transform 0.12s, box-shadow 0.12s;
         }
 
-        button:hover { transform: translateY(-4px); }
+        button:active { transform: translateY(3px); box-shadow: 0 3px 0 rgba(0,0,0,0.5); }
+
+        /* Desktop hover only (avoids sticky hover on mobile) */
+        @media (hover: hover) {
+            .character-card:hover { transform: translateY(-5px); box-shadow: 0 14px 0 rgba(0,0,0,0.5); }
+            .diff-btn:hover       { transform: translateY(-2px); }
+            button:hover          { transform: translateY(-3px); box-shadow: 0 9px 0 rgba(0,0,0,0.5); }
+            .cell:hover:not(.taken) { background: #fff176; transform: scale(1.04); }
+        }
+
+        /* Very small screens */
+        @media (max-width: 360px) {
+            .container { padding: 10px 8px; }
+            .characters { gap: 8px; }
+        }
     </style>
 </head>
 <body>
     <div class="header">CONCRETE CLASH</div>
 
     <div class="container">
-        <!-- Selection -->
+
+        <!-- SELECTION -->
         <div id="selectionScreen">
             <div class="title">TIC-TAC-TOE</div>
-            <h2 style="color:#FFEB3B; text-align:center; margin:20px 0;">CHOOSE YOUR FIGHTER</h2>
-            
+            <div class="subtitle">CHOOSE YOUR FIGHTER</div>
+
+            <div class="difficulty-bar">
+                <button class="diff-btn active" onclick="setDifficulty('easy',this)">EASY</button>
+                <button class="diff-btn"        onclick="setDifficulty('medium',this)">MEDIUM</button>
+                <button class="diff-btn"        onclick="setDifficulty('hard',this)">HARD</button>
+            </div>
+            <div class="diff-label" id="diffLabel">🟢 EASY</div>
+
             <div class="characters">
                 <div class="character-card" onclick="selectCharacter('X')">
-                    <div class="character-mark">X</div>
+                    <div class="character-mark">✕</div>
                     <div class="character-name">BEAN</div>
+                    <div class="character-sub">GOES FIRST</div>
                 </div>
                 <div class="character-card" onclick="selectCharacter('O')">
-                    <div class="character-mark">O</div>
+                    <div class="character-mark">○</div>
                     <div class="character-name">KONKURRI</div>
+                    <div class="character-sub">GOES SECOND</div>
                 </div>
             </div>
         </div>
 
-        <!-- Game -->
+        <!-- GAME -->
         <div id="gameScreen" style="display:none;">
             <div class="info-bar">
-                <div><strong>BEAN</strong> <span id="scoreBean">0</span></div>
-                <div style="font-size:2.2rem;">VS</div>
-                <div style="text-align:right;"><strong>KONKURRI</strong> <span id="scoreKonkurri">0</span></div>
+                <div>
+                    <div id="humanLabel">BEAN</div>
+                    <div class="info-score" id="scoreHuman">0</div>
+                </div>
+                <div style="text-align:center;">
+                    <div class="vs-text">VS</div>
+                    <div class="diff-tag" id="diffDisplay">EASY MODE</div>
+                </div>
+                <div style="text-align:right;">
+                    <div id="botLabel">KONKURRI</div>
+                    <div class="info-score" id="scoreBot">0</div>
+                </div>
             </div>
 
             <div class="board" id="board"></div>
 
             <div class="status" id="status">YOUR MOVE</div>
 
-            <div style="text-align:center; margin-top:20px;">
+            <div class="btn-row">
                 <button onclick="resetGame()">NEW ROUND</button>
                 <button onclick="backToSelection()">CHANGE FIGHTER</button>
             </div>
         </div>
+
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
@@ -187,169 +301,185 @@
         let humanName = 'Bean', botName = 'Konkurri';
         let currentPlayer = 'X';
         let gameActive = true;
-        let scores = { Bean: 0, Konkurri: 0 };
+        let scores = { human: 0, bot: 0 };
+        let difficulty = 'easy';
 
-        const winningCombos = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+        const winningCombos = [
+            [0,1,2],[3,4,5],[6,7,8],
+            [0,3,6],[1,4,7],[2,5,8],
+            [0,4,8],[2,4,6]
+        ];
 
-        function checkWinner(b, player) {
-            return winningCombos.some(combo => combo.every(i => b[i] === player));
+        const diffMeta = {
+            easy:   { label: '🟢 EASY',       tag: 'EASY MODE'   },
+            medium: { label: '🟡 MEDIUM' ,      tag: 'MEDIUM MODE' },
+            hard:   { label: '🔴 HARD',    tag: 'HARD MODE'   }
+        };
+
+        function setDifficulty(level, btn) {
+            difficulty = level;
+            document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('diffLabel').textContent = diffMeta[level].label;
         }
 
-        function isDraw(b) {
-            return b.every(cell => cell !== null);
+        function checkWinner(b, p) { return winningCombos.find(c => c.every(i => b[i] === p)) || null; }
+        function isDraw(b)         { return b.every(c => c !== null); }
+
+        function minimax(b, isMax, depth) {
+            if (checkWinner(b, botMark))   return 10 - depth;
+            if (checkWinner(b, humanMark)) return depth - 10;
+            if (isDraw(b)) return 0;
+            let best = isMax ? -Infinity : Infinity;
+            let mark = isMax ? botMark : humanMark;
+            for (let i = 0; i < 9; i++) {
+                if (b[i] === null) {
+                    b[i] = mark;
+                    let s = minimax(b, !isMax, depth + 1);
+                    b[i] = null;
+                    best = isMax ? Math.max(best, s) : Math.min(best, s);
+                }
+            }
+            return best;
         }
 
-        function getBestMove() {
-            let bestScore = -Infinity;
-            let bestMove = -1;
-
+        function getBestMoveHard() {
+            let best = -Infinity, move = -1;
             for (let i = 0; i < 9; i++) {
                 if (board[i] === null) {
                     board[i] = botMark;
-                    let score = minimax(board, false);
+                    let s = minimax(board, false, 0);
                     board[i] = null;
-                    if (score > bestScore) {
-                        bestScore = score;
-                        bestMove = i;
-                    }
+                    if (s > best) { best = s; move = i; }
                 }
             }
-            return bestMove;
+            return move;
         }
 
-        function minimax(newBoard, isMaximizing) {
-            if (checkWinner(newBoard, botMark)) return 10;
-            if (checkWinner(newBoard, humanMark)) return -10;
-            if (isDraw(newBoard)) return 0;
-
-            let bestScore = isMaximizing ? -Infinity : Infinity;
-            let player = isMaximizing ? botMark : humanMark;
-
+        function getTacticalMove() {
             for (let i = 0; i < 9; i++) {
-                if (newBoard[i] === null) {
-                    newBoard[i] = player;
-                    let score = minimax(newBoard, !isMaximizing);
-                    newBoard[i] = null;
-                    bestScore = isMaximizing ? Math.max(score, bestScore) : Math.min(score, bestScore);
-                }
+                if (board[i] === null) { board[i] = botMark; if (checkWinner(board, botMark))   { board[i] = null; return i; } board[i] = null; }
             }
-            return bestScore;
+            for (let i = 0; i < 9; i++) {
+                if (board[i] === null) { board[i] = humanMark; if (checkWinner(board, humanMark)) { board[i] = null; return i; } board[i] = null; }
+            }
+            return -1;
         }
 
-        function renderBoard() {
-            const boardEl = document.getElementById('board');
-            boardEl.innerHTML = '';
+        function getRandomMove() {
+            const e = board.map((v,i) => v === null ? i : -1).filter(i => i !== -1);
+            return e.length ? e[Math.floor(Math.random() * e.length)] : -1;
+        }
 
+        function getBotMove() {
+            if (difficulty === 'easy') {
+                if (Math.random() < 0.20) { const t = getTacticalMove(); return t !== -1 ? t : getRandomMove(); }
+                return getRandomMove();
+            }
+            if (difficulty === 'medium') {
+                const t = getTacticalMove();
+                if (t !== -1) return t;
+                if (Math.random() < 0.50) { for (const i of [4,0,2,6,8,1,3,5,7]) if (board[i] === null) return i; }
+                return getRandomMove();
+            }
+            return getBestMoveHard();
+        }
+
+        function renderBoard(winCombo = null) {
+            const el = document.getElementById('board');
+            el.innerHTML = '';
             for (let i = 0; i < 9; i++) {
                 const cell = document.createElement('div');
                 cell.classList.add('cell');
-                cell.dataset.index = i;
-
                 if (board[i]) {
-                    cell.textContent = board[i];
-                    cell.classList.add(board[i].toLowerCase());
+                    cell.textContent = board[i] === 'X' ? '✕' : '○';
+                    cell.classList.add('taken');
+                    if (winCombo && winCombo.includes(i)) cell.classList.add('winning');
                 } else if (gameActive && currentPlayer === humanMark) {
                     cell.addEventListener('click', () => makeMove(i));
                 }
-
-                boardEl.appendChild(cell);
+                el.appendChild(cell);
             }
         }
 
         function makeMove(index) {
             if (!gameActive || board[index] !== null || currentPlayer !== humanMark) return;
-
             board[index] = humanMark;
             renderBoard();
-
-            if (checkWinner(board, humanMark)) {
-                endGame(humanName);
-                return;
-            }
-            if (isDraw(board)) {
-                endGame("DRAW");
-                return;
-            }
-
+            const wc = checkWinner(board, humanMark);
+            if (wc) { endGame(humanName, wc); return; }
+            if (isDraw(board)) { endGame('DRAW'); return; }
             currentPlayer = botMark;
-            document.getElementById('status').textContent = `${botName} THINKING...`;
-            
-            setTimeout(botTurn, 300);
+            document.getElementById('status').textContent = `${botName} IS THINKING...`;
+            renderBoard();
+            setTimeout(botTurn, 380);
         }
 
         function botTurn() {
-            const move = getBestMove();
+            const move = getBotMove();
             if (move === -1) return;
-
             board[move] = botMark;
-            renderBoard();
-
-            if (checkWinner(board, botMark)) {
-                endGame(botName);
-                return;
-            }
-            if (isDraw(board)) {
-                endGame("DRAW");
-                return;
-            }
-
-            // ✅ Fixed: Update player first, then render again
+            const wc = checkWinner(board, botMark);
+            if (wc) { renderBoard(wc); endGame(botName, wc); return; }
+            if (isDraw(board)) { renderBoard(); endGame('DRAW'); return; }
             currentPlayer = humanMark;
+            renderBoard();
             document.getElementById('status').textContent = `YOUR TURN • ${humanName}`;
-            renderBoard();   // Re-render to add click listeners
         }
 
-        function endGame(winner) {
+        function endGame(winner, winCombo = null) {
             gameActive = false;
-            const status = document.getElementById('status');
-
-            if (winner === "DRAW") {
-                status.textContent = "IT'S A DRAW!";
+            renderBoard(winCombo);
+            const s = document.getElementById('status');
+            if (winner === 'DRAW') {
+                s.textContent = "🤝 IT'S A DRAW!";
+            } else if (winner === humanName) {
+                s.textContent = `🎉 ${humanName} WINS!`;
+                scores.human++;
+                confetti({ particleCount: 160, spread: 75, origin: { y: 0.6 }, colors: ['#FFEB3B','#1C2526','#69f0ae'] });
             } else {
-                status.textContent = `${winner} WINS!`;
-                if (winner === humanName) scores.Bean++;
-                else scores.Konkurri++;
-                
-                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                s.textContent = `💀 ${botName} WINS! TRY AGAIN!`;
+                scores.bot++;
             }
-
-            document.getElementById('scoreBean').textContent = scores.Bean;
-            document.getElementById('scoreKonkurri').textContent = scores.Konkurri;
+            document.getElementById('scoreHuman').textContent = scores.human;
+            document.getElementById('scoreBot').textContent   = scores.bot;
         }
 
         function startGame() {
             board = Array(9).fill(null);
             currentPlayer = 'X';
             gameActive = true;
-
             document.getElementById('selectionScreen').style.display = 'none';
-            document.getElementById('gameScreen').style.display = 'block';
-
+            document.getElementById('gameScreen').style.display      = 'block';
+            document.getElementById('humanLabel').textContent  = humanName.toUpperCase();
+            document.getElementById('botLabel').textContent    = botName.toUpperCase();
+            document.getElementById('diffDisplay').textContent = diffMeta[difficulty].tag;
             renderBoard();
-            document.getElementById('status').textContent = `YOUR TURN • ${humanName}`;
-
-            if (humanMark === 'O') setTimeout(botTurn, 400);
+            document.getElementById('status').textContent = humanMark === 'X'
+                ? `YOUR TURN • ${humanName} GOES FIRST`
+                : `${botName} GOES FIRST...`;
+            if (humanMark === 'O') setTimeout(botTurn, 500);
         }
 
         window.selectCharacter = function(mark) {
-            humanMark = mark;
-            botMark = mark === 'X' ? 'O' : 'X';
+            humanMark = mark; botMark = mark === 'X' ? 'O' : 'X';
             humanName = mark === 'X' ? 'Bean' : 'Konkurri';
-            botName = mark === 'X' ? 'Konkurri' : 'Bean';
+            botName   = mark === 'X' ? 'Konkurri' : 'Bean';
+            scores    = { human: 0, bot: 0 };
             startGame();
         };
 
         window.resetGame = function() {
             board = Array(9).fill(null);
-            currentPlayer = 'X';
-            gameActive = true;
+            currentPlayer = 'X'; gameActive = true;
             renderBoard();
-            document.getElementById('status').textContent = `YOUR TURN • ${humanName}`;
-            if (humanMark === 'O') setTimeout(botTurn, 300);
+            document.getElementById('status').textContent = humanMark === 'X'
+                ? `YOUR TURN • ${humanName}` : `${botName} GOES FIRST...`;
+            if (humanMark === 'O') setTimeout(botTurn, 400);
         };
 
         window.backToSelection = function() {
-            document.getElementById('gameScreen').style.display = 'none';
+            document.getElementById('gameScreen').style.display      = 'none';
             document.getElementById('selectionScreen').style.display = 'block';
         };
     </script>
